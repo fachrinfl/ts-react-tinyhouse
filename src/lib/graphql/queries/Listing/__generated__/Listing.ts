@@ -14,7 +14,7 @@ export interface Listing_listing_host {
   id: string;
   name: string;
   avatar: string;
-  hasWallet: string;
+  hasWallet: boolean | null;
 }
 
 export interface Listing_listing_bookings_result_tenant {
