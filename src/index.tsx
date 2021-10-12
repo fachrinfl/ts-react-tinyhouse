@@ -6,7 +6,7 @@ import { LOG_IN } from './lib/graphql/mutations';
 import { LogIn as LogInData, LogInVariables } from './lib/graphql/mutations/LogIn/__generated__/LogIn';
 import {Affix, Layout, Spin} from 'antd';
 import {ApolloProvider, useMutation} from '@apollo/react-hooks';
-import { AppHeader, Home, Host, Listing, Listings, NotFound, User, Login, Stripe } from './sections';
+import { AppHeader, Home, Listing, Listings, NotFound, User, Login, Stripe, WrappedHost as Host } from './sections';
 import {Viewer} from './lib/types';
 import * as serviceWorker from "./serviceWorker";
 import './styles/index.css';
@@ -77,8 +77,8 @@ const App = () => {
         </Affix>
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route exact path="/host" component={Host} />
-          <Route exact path="/listing/:id" component={Listing} />
+          <Route exact path="/host" render={props => <Host {...props} viewer={viewer} />} />
+          <Route exact path="/listing/:id" render={props => <Listing {...props} viewer={viewer} />} />
           <Route exact path="/listings/:location?" component={Listings} />
           <Route exact path="/login" render={props => <Login {...props} setViewer={setViewer} />} />
           <Route exact path="/user/:id" render={props => <User {...props} viewer={viewer} setViewer={setViewer}/>} />
