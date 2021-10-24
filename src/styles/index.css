@@ -562,7 +562,7 @@
   margin: 20px 0;
 }
 .user-bookings__booking-history {
-  margin-bottom: 20px;
+  margin-bottom  : 20px;
 }
 .user-bookings__booking-history > div {
   font-size: 13px;

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import {Layout, Typography, Row, Col} from 'antd';
 import {HomeHero, HomeListings, HomeListingsSkeleton} from './components';
 import {useQuery} from '@apollo/react-hooks';
@@ -7,6 +7,7 @@ import {Listings as ListingsData, ListingsVariables} from '../../lib/graphql/que
 import { LISTINGS } from '../../lib/graphql/queries';
 import {ListingsFilter} from '../../lib/graphql/globalTypes';
 import {displayErrorMessage} from '../../lib/utils';
+import { useScrollToTop } from '../../lib/hooks';
 
 import mapBackground from './assets/map-background.jpg';
 import sanFransiscoImage from './assets/san-fransisco.jpg';
@@ -18,14 +19,18 @@ const {Paragraph, Title} = Typography;
 const PAGE_LIMIT = 4;
 const PAGE_NUMBER = 1;
 
-export const Home = ({history}: RouteComponentProps) => {
+export const Home = () => {
+    const history = useHistory();
     const {loading, data} = useQuery<ListingsData, ListingsVariables>(LISTINGS, {
         variables: {
             filter: ListingsFilter.PRICE_HIGH_TO_LOW,
             limit: PAGE_LIMIT,
             page: PAGE_NUMBER
-        }
+        },
+        fetchPolicy: "cache-and-network"
     });
+
+    useScrollToTop();
 
     const onSearch = (value: string) => {
         const trimmedValue = value.trim();

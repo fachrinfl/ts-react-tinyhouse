@@ -4,6 +4,7 @@ import { useMutation } from '@apollo/react-hooks';
 import {Redirect} from 'react-router-dom';
 import {FormComponentProps} from 'antd/lib/form';
 import {UploadChangeParam} from 'antd/lib/upload';
+import { useScrollToTop } from '../../lib/hooks';
 import { Viewer } from '../../lib/types';
 import { ListingType } from '../../lib/graphql/globalTypes';
 import {HOST_LISTING} from '../../lib/graphql/mutations/HostListing';
@@ -35,6 +36,8 @@ export const Host = ({viewer, form}: Props & FormComponentProps) => {
             displayErrorMessage("Sorry! We weren't able to creatrse your listing. Please try again later.");
         }
     });
+
+    useScrollToTop();
 
     const handleImageUpload = (info: UploadChangeParam) => {
         setImageLoading(true);
