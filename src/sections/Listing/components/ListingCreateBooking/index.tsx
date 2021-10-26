@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Card, Divider, Typography, DatePicker} from 'antd';
+import {Button, Card, Divider, Typography, DatePicker, Tooltip} from 'antd';
 import moment, { Moment } from 'moment';
 import {Listing as ListingData} from '../../../../lib/graphql/queries/Listing/__generated__/Listing';
 import { formatListingPrice, displayErrorMessage } from '../../../../lib/utils';
@@ -38,7 +38,16 @@ export const ListingCreateBooking = ({ viewer, bookingsIndex, host, price, check
     const disabledDate = (currentDate?: any): boolean => {
         if (currentDate) {
             const dateIsBeforeEndOfDay = currentDate.isBefore(moment().endOf("day"));
-            return dateIsBeforeEndOfDay || dateIsBooked(currentDate);
+            const dateIsMoreThanThreeMonthsAhead = moment(currentDate).isAfter(
+                moment()
+                .endOf("day")
+                .add(90, "days")
+            );
+            return (
+                dateIsMoreThanThreeMonthsAhead ||
+                dateIsBeforeEndOfDay || 
+                dateIsBooked(currentDate)
+            );
         } else {
             return false;
         }
@@ -106,6 +115,15 @@ export const ListingCreateBooking = ({ viewer, bookingsIndex, host, price, check
                             disabledDate={disabledDate}
                             onChange={dateValue => setCheckInDate(dateValue)}
                             onOpenChange={() => setCheckOutDate(null)}
+                            renderExtraFooter={() => {
+                                return (
+                                    <div>
+                                        <Text type="secondary" className="ant-calendar-footer-text">
+                                            You can only book a listing within 90 days from today.
+                                        </Text>
+                                    </div>
+                                );
+                            }}
                         /> 
                     </div>
                     <div className="listing-booking__card-date-picker">
@@ -117,6 +135,30 @@ export const ListingCreateBooking = ({ viewer, bookingsIndex, host, price, check
                             disabled={checkOutInputDisabled}
                             disabledDate={disabledDate}
                             onChange={dateValue => verifyAndSetCheckOutDate(dateValue)}
+                            dateRender={current => {
+                                if (
+                                    moment(current).isSame(checkInDate ? checkInDate : undefined, "day")
+                                ) {
+                                    return (
+                                        <Tooltip title="Check in date">
+                                            <div className="ant-calendar-date ant-calendar-date__check-in">
+                                                {current.date()}
+                                            </div>
+                                        </Tooltip>
+                                    );
+                                } else {
+                                    return <div className="ant-calendar-date">{current.date()}</div>
+                                }
+                            }}
+                            renderExtraFooter={() => {
+                                return (
+                                    <div>
+                                        <Text type="secondary" className="ant-calendar-footer-text">
+                                            Check-out cannot be before check-in.
+                                        </Text>
+                                    </div>
+                                );
+                            }}
                         />
                     </div>
                 </div>
