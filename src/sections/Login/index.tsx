@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import { Redirect } from 'react-router'; 
+import { Redirect, useLocation } from 'react-router'; 
 import {Card, Layout, Typography, Spin} from 'antd';
 import { ErrorBanner } from '../../lib/components';
 import { displaySuccessNotification, displayErrorMessage } from '../../lib/utils';
@@ -33,15 +33,21 @@ export const Login = ({setViewer}: Props) => {
                 if (data.logIn.token) sessionStorage.setItem("token", data.logIn.token);
                 displaySuccessNotification("You've sucessfully logged in!");
             }
-        }
+        },
+        onError: () => {} // necessary to test error state of component
     });
 
     const logInRef = useRef(logIn);
 
+    const location = useLocation();
+
     useScrollToTop();
 
     useEffect(() => {
-        const code = new URL(window.location.href).searchParams.get("code");
+        // const code = new URL(window.location.href).searchParams.get("code");
+        const searchParams = new URLSearchParams(location.search);
+        const code = searchParams.get("code");
+
         if (code) {
             logInRef.current({
                 variables: {
@@ -49,14 +55,15 @@ export const Login = ({setViewer}: Props) => {
                 }
             })
         }
-    }, []);
+    }, [location.search]);
 
     const handleAuthorize = async () => {
         try {
             const {data} = await client.query<AuthUrlData>({
                 query: AUTH_URL
             });
-            window.location.href = data.authUrl;
+
+            window.location.assign(data.authUrl);
         } catch {
             displayErrorMessage("Sorry! We weren't able to log you in. Please try again later!");
         }
